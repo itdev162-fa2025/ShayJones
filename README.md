@@ -1,2 +1,0 @@
-# ShayJones
-hello world! 
