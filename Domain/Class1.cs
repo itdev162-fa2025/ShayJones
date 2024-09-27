@@ -1,6 +1,12 @@
-﻿namespace Domain;
+﻿
+namespace Domain;
 
 public class Class1
 {
 
 }
+
+
+
+
+
