@@ -1,29 +1,35 @@
+using System;
+using Domain; 
 using Microsoft.EntityFrameworkCore;
-
 
 namespace Persistence
 {
-    public class DataContext : DbContext
+       public class DataContext : DbContext
     {
-        public DbSet<WeatherForecast> WeatherForecasts { get; set; } // Fixed typo
+        public DbSet<Domain.WeatherForecast> WeatherForecasts { get; set; }
+        public DbSet<Post> Posts { get; set; }
 
-        public string DbPath { get; private set; }
+        public string? DbPath { get; }
 
-        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        public DataContext()
         {
-            // Constructor with DbContextOptions parameter
+            var folder = Environment.SpecialFolder.LocalApplicationData;
+            var path = Environment.GetFolderPath(folder);
+            DbPath = System.IO.Path.Join(path, "Blogbox.db");   
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                //var folder = Environment.SpecialFolder.LocalApplicationData;
-                //var path = Environment.GetFolderPath(folder);
-                //DbPath = System.IO.Path.Join(path, "Blogbox.db"); 
-
                 optionsBuilder.UseSqlite($"Data Source={DbPath}"); 
             }
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<WeatherForecast>().HasNoKey();
+        }
+
     }
 }
