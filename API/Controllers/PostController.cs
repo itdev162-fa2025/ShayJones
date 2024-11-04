@@ -1,26 +1,38 @@
 using Microsoft.AspNetCore.Mvc;
-using Persistence; 
-using Domain; 
+using Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Persistence;
 
-namespace API.Controllers 
+namespace API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class PostsController : ControllerBase
     {
-        private readonly DataContext _context; 
+        private readonly DataContext _context;
 
-        public PostsController(DataContext context) 
+        public PostsController(DataContext context) => _context = context;
+
+        // GET: api/Posts
+        [HttpGet(Name = "GetPosts")]
+        public ActionResult<List<Post>> Get()
         {
-            _context = context; 
+            var posts = _context.Posts.ToList();
+            return Ok(posts);
         }
 
-        [HttpGet("GetPosts")] 
-        public ActionResult<List<Post>> Get() 
+        // GET: api/Posts/{id}
+        [HttpGet("{id}", Name = "GetById")]
+        public ActionResult<Post> GetById(Guid id)
         {
-            return this._context.Posts.ToList();
+            var post = _context.Posts.Find(id);
+            if (post == null)
+            {
+                return NotFound();
+            }
+            return Ok(post);
         }
     }
 }

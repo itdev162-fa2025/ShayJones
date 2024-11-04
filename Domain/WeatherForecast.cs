@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 
+
 namespace Domain
 {
   public class WeatherForecast
