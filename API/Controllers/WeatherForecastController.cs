@@ -1,15 +1,15 @@
 using System;
-using System.Collections.Generic; // Make sure this is included
+using System.Collections.Generic;
 using System.Linq;
-using Domain; 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Domain;
 using Persistence;
 
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -26,38 +26,53 @@ namespace API.Controllers
             _context = context;
         }
 
-        [HttpGet("GetWeatherForecast", Name = "GetWeatherForecast")]
+        // POST: api/WeatherForecast/Create
+        [HttpPost("Create", Name = "CreateWeatherForecast")]
         public ActionResult<WeatherForecast> Create()
         {
-            Console.WriteLine($"Database path: {_context.DbPath}");
-            Console.WriteLine("Insert a new WeatherForecast");
+            _logger.LogInformation("Inserting a new WeatherForecast");
 
-            var forecast = new WeatherForecast()
+            var forecast = new WeatherForecast
             {
-                Date = DateTime.Now, // or DateOnly.FromDateTime(DateTime.Now) if you prefer DateOnly
-                TemperatureC = 75, 
+                Date = DateTime.Now,
+                TemperatureC = 75,
                 Summary = "Warm"
             };
 
             _context.WeatherForecasts.Add(forecast);
-            var success = _context.SaveChanges() > 0; 
+            var success = _context.SaveChanges() > 0;
 
             if (success)
             {
-                return forecast; // Return created forecast
+                return CreatedAtAction(nameof(GetById), new { id = forecast.Id }, forecast);
             }
 
-            throw new Exception("Error creating WeatherForecast");
+            _logger.LogError("Error creating WeatherForecast");
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error creating WeatherForecast");
         }
 
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get() => 
+        // GET: api/WeatherForecast
+        [HttpGet(Name = "GetWeatherForecasts")]
+        public IEnumerable<WeatherForecast> Get() =>
             Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
                 TemperatureC = Random.Shared.Next(-20, 55),
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             }).ToArray();
+
+        // GET: api/WeatherForecast/{id}
+        [HttpGet("{id}", Name = "GetById")]
+        public ActionResult<WeatherForecast> GetById(Guid id)
+        {
+            var forecast = _context.WeatherForecasts.Find(id);
+            if (forecast == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(forecast);
+        }
     }
 }
 

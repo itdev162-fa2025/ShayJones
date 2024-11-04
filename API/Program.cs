@@ -1,26 +1,10 @@
-using Persistence; 
 using Microsoft.EntityFrameworkCore;
-using System.Diagnosis;
-using Persistence;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll",
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
-                  
-        });
-});
-
-
+        
 builder.Services.AddControllers();
-
+builder.Services.AddCors();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>();
@@ -34,10 +18,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpRedirection();
-app.UseCors("AllowAll");
+app.UseCors(policy => policy
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .WithOrigins("https://localhost:5168")
+);
 
-app.UseAuthorization();
+//app.UseAuthorization();
 app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
@@ -56,3 +43,4 @@ using (var scope = app.Services.CreateScope())
         }
 }
 app.Run();
+

@@ -1,8 +1,6 @@
 using System;
-using System.Linq;
 using Domain; 
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic; 
 
 namespace Persistence {
@@ -17,7 +15,7 @@ namespace Persistence {
 
                     new Post{
                         Title = "First post",
-                        Body = "Lore, ipsum dolor sit amet, consectetur ad",
+                        Body = "Lorem ipsum dolor sit amet, consectetur ad",
                         Date = DateTime.Now.AddDays(-10)
                     },
 
