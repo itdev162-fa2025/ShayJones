@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.http.get('http://localhost:5252/api/posts').subscribe({
+    this.http.get('http://localhost:5162/api/posts').subscribe({
       next: (response) => this.posts = response,
       error: (e) => console.error(e),
       complete: () => console.log('complete')
